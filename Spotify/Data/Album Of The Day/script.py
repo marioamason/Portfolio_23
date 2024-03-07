@@ -129,3 +129,4 @@ send_email(output_text)  # Send the email with the album information
 #8. Explore other APIs and data sources to enhance the album recommendations
 # 9. Add a web interface for users to interact with the script and receive recommendations
 # 10. Set up environment variables for sensitive information such as API credentials and email passwords
+# 11. Update for apple music since I dont even use spotify lol
