@@ -35,19 +35,25 @@ def get_listening_history(token):
     print(f"Retrieved {len(listening_history)} items from user's listening history for 2023.")
     return listening_history
 
+# Function to get artist's genres from Spotify API
+def get_artist_genres(artist_id, token):
+    sp = spotipy.Spotify(auth=token)
+    artist = sp.artist(artist_id)
+    return artist.get('genres', [])
+
 # Function to analyze listening behavior over 2023
 def analyze_listening_behavior(listening_history, token):
-    # Initialize a dictionary to store genre counts for each month
-    genre_counts_by_month = {}
+    # Initialize a dictionary to store genre counts for each day
+    genre_counts_by_day = {}
 
     for item in listening_history:
-        # Extract the month from the played_at timestamp
+        # Extract the full date from the played_at timestamp
         played_at = item['played_at']
-        month = played_at[:7]  # Extract year-month part
+        day = played_at[:10]  # Extract year-month-day part
 
-        # If month is not already in the dictionary, initialize it with an empty Counter
-        if month not in genre_counts_by_month:
-            genre_counts_by_month[month] = Counter()
+        # If day is not already in the dictionary, initialize it with an empty Counter
+        if day not in genre_counts_by_day:
+            genre_counts_by_day[day] = Counter()
 
         track = item['track']
         if 'album' in track:
@@ -56,41 +62,35 @@ def analyze_listening_behavior(listening_history, token):
                     artist_id = artist['id']
                     genres = get_artist_genres(artist_id, token)
                     if genres:  # Check if genres list is not empty
-                        genre_counts_by_month[month].update(genres)
+                        genre_counts_by_day[day].update(genres)
 
     print("Listening behavior analyzed successfully.")
-    return genre_counts_by_month
-
-# Function to get artist's genres from Spotify API
-def get_artist_genres(artist_id, token):
-    sp = spotipy.Spotify(auth=token)
-    artist = sp.artist(artist_id)
-    return artist.get('genres', [])
+    return genre_counts_by_day
 
 # Function to visualize results in a tabular format
-def visualize_results(genre_counts_by_month):
+def visualize_results(genre_counts_by_day):
     # Print the table header
-    print("Listening behavior changes over 2023 by month:")
+    print("Listening behavior changes over 2023 by day:")
 
-    # Iterate over the months and print the genre counts for each month
-    for month, genre_counts in genre_counts_by_month.items():
+    # Iterate over the days and print the genre counts for each day
+    for day, genre_counts in genre_counts_by_day.items():
         # Convert the Counter object to a list of tuples for tabulate
         data = [(genre, count) for genre, count in genre_counts.items()]
 
         # Sort the data by count in descending order
         sorted_data = sorted(data, key=lambda x: x[1], reverse=True)
 
-        # Print the month
-        print(f"\nMonth: {month}")
+        # Print the day
+        print(f"\nDay: {day}")
 
         # Print the table using tabulate
         print(tab(sorted_data, headers=['Genre', 'Count'], tablefmt='pretty'))
 
 def main():
     # Spotify API credentials
-    client_id = ""
-    client_secret = ""
-    username = ""
+    client_id = "92ff646b7def4a86a8cce645d7c16faf"
+    client_secret = "6d1271150fb64fd18f8dc8d2d254c1cf"
+    username = "oj83o6vdjgnq2zvwij6vfp170"
 
     # Step 1: Authenticate User
     token = authenticate_user(client_id, client_secret, username)
@@ -101,10 +101,10 @@ def main():
     listening_history = get_listening_history(token)
 
     # Step 3: Analyze Listening Behavior over 2023
-    genre_counts_by_month = analyze_listening_behavior(listening_history, token)
+    genre_counts_by_day = analyze_listening_behavior(listening_history, token)
 
     # Step 4: Visualize Results
-    visualize_results(genre_counts_by_month)
+    visualize_results(genre_counts_by_day)
 
 if __name__ == "__main__":
     main()
