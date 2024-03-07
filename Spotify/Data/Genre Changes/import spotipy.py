@@ -88,9 +88,9 @@ def visualize_results(genre_counts_by_day):
 
 def main():
     # Spotify API credentials
-    client_id = "92ff646b7def4a86a8cce645d7c16faf"
-    client_secret = "6d1271150fb64fd18f8dc8d2d254c1cf"
-    username = "oj83o6vdjgnq2zvwij6vfp170"
+    client_id = ""
+    client_secret = ""
+    username = ""
 
     # Step 1: Authenticate User
     token = authenticate_user(client_id, client_secret, username)
